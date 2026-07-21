@@ -125,7 +125,7 @@ p5-bt-light-control/
 Google Drive Link:
 
 ```
-https://drive.google.com/file/d/1sKf7OyG2re6zREDIOaLvmjLuF51QTzxT/view?usp=drive_link
+(https://drive.google.com/file/d/1sKf7OyG2re6zREDIOaLvmjLuF51QTzxT/view?usp=drive_link)
 ```
 
 ---
