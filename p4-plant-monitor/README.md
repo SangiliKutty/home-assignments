@@ -122,7 +122,7 @@ p4-plant-monitor/
 
 Google Drive Link:
 
-*Paste your Google Drive video link here.*
+https://drive.google.com/file/d/17op0YJrMr3TC0WbVlqDzzpRmWyqo6V0t/view?usp=drive_link
 
 ---
 
