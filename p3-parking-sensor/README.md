@@ -115,7 +115,7 @@ p3-parking-sensor/
 
 Google Drive Link:
 
-*Paste your Google Drive demo video link here.*
+https://drive.google.com/file/d/1Xq9fM04bOc-Cvv4qkI-jrJp5OYO-pBkp/view?usp=drive_link
 
 ---
 
