@@ -2,95 +2,231 @@
 
 ## Project Overview
 
-The Full IoT Home Automation Hub is a comprehensive ESP32-based smart home system that integrates multiple sensors, relay modules, Wi-Fi connectivity, MQTT communication, and a web dashboard. The system monitors temperature, humidity, gas levels, motion, and ambient light while automatically controlling a fan and lighting based on predefined automation rules. It also provides real-time monitoring through an OLED display, web interface, and MQTT messages.
+The Full IoT Home Automation Hub is an ESP32-based smart home system that integrates multiple sensors, automation, OLED display, Wi-Fi, and MQTT communication into a single platform. The system continuously monitors room temperature, humidity, gas leakage, motion, and ambient light, while automatically controlling a fan and room light through relays. It also hosts a web dashboard and publishes sensor data to an MQTT broker for real-time remote monitoring.
 
-## Components Used
-
-- ESP32 Dev Board
-- DHT11 Temperature & Humidity Sensor
-- MQ-2 Gas Sensor
-- PIR Motion Sensor (HC-SR501)
-- LDR (Light Dependent Resistor)
-- 2-Channel Relay Module
-- OLED Display (SSD1306 I2C)
-- Active Buzzer
-- Red LED
-- Green LED
-- Two Push Buttons
-- Breadboard
-- Jumper Wires
+---
 
 ## Features
 
-- Monitors temperature and humidity
-- Detects gas leakage
-- Detects motion using PIR sensor
-- Measures ambient light intensity
-- Automatic fan control using temperature
-- Automatic light control using PIR and LDR
-- Gas leak emergency shutdown
-- OLED status display
-- Web dashboard with live sensor values
-- MQTT data publishing
-- Manual relay override buttons
-- System uptime display
+* Real-time monitoring of temperature and humidity using DHT11
+* Gas leakage detection using MQ-2 sensor
+* Motion detection using PIR sensor
+* Ambient light detection using LDR
+* Automatic fan control based on temperature
+* Automatic light control based on light level and motion
+* Gas safety shutdown with buzzer and LED alert
+* OLED display with multiple information screens
+* Web dashboard using ESP32 AsyncWebServer
+* MQTT data publishing to HiveMQ broker
+* Manual relay override using push buttons
+* System uptime monitoring using `millis()`
 
-## Wiring
+---
 
-- DHT11 DATA → GPIO4
-- MQ-2 AOUT → GPIO35
-- PIR OUT → GPIO13
-- LDR Output → GPIO34
-- Relay 1 (Fan) → GPIO26
-- Relay 2 (Light) → GPIO27
-- OLED SDA → GPIO21
-- OLED SCL → GPIO22
-- Buzzer → GPIO14
-- Red LED → GPIO25
-- Green LED → GPIO2
-- Fan Override Button → GPIO0
-- Light Override Button → GPIO32
+## Components Used
 
-## Libraries
+* ESP32 Dev Board
+* DHT11 Temperature & Humidity Sensor
+* MQ-2 Gas Sensor
+* PIR Motion Sensor (HC-SR501)
+* LDR with 10kΩ Resistor
+* 2-Channel Relay Module
+* OLED Display (SSD1306 I2C)
+* Active Buzzer
+* Red LED
+* Green LED
+* Two Push Buttons
+* Breadboard
+* Jumper Wires
 
-- WiFi
-- ESPAsyncWebServer
-- PubSubClient
-- DHTesp
-- Adafruit SSD1306
-- Adafruit GFX
+---
 
-## How to Run
+## Wiring Summary
 
-1. Install all required libraries.
-2. Update the Wi-Fi SSID and password.
-3. Configure the MQTT broker settings.
-4. Connect all hardware according to the wiring diagram.
-5. Upload the code to the ESP32.
-6. Open the Serial Monitor to obtain the ESP32 IP address.
-7. Open the IP address in a web browser to access the dashboard.
+| Component             | ESP32 Pin |
+| --------------------- | --------- |
+| DHT11 Data            | GPIO4     |
+| MQ-2 Analog Output    | GPIO35    |
+| PIR Output            | GPIO13    |
+| LDR                   | GPIO34    |
+| Relay 1 (Fan)         | GPIO26    |
+| Relay 2 (Light)       | GPIO27    |
+| Buzzer                | GPIO14    |
+| Red LED               | GPIO25    |
+| Green LED             | GPIO2     |
+| Fan Override Button   | GPIO0     |
+| Light Override Button | GPIO32    |
+| OLED SDA              | GPIO21    |
+| OLED SCL              | GPIO22    |
+
+---
+
+## Working Principle
+
+The ESP32 reads all sensor values every 5 seconds.
+
+### Fan Automation
+
+* Turns ON automatically when the temperature exceeds **32°C**.
+* Turns OFF automatically when the temperature drops below **28°C**.
+
+### Light Automation
+
+* Turns ON when the room is dark and motion is detected.
+* Turns OFF when daylight is detected or no motion is present for 3 minutes.
+
+### Gas Safety
+
+* If gas concentration exceeds the safety threshold:
+
+  * Buzzer turns ON
+  * Red LED glows
+  * Both relays turn OFF
+  * Alert message is published to the MQTT broker
+
+### OLED Display
+
+The OLED automatically switches between three screens:
+
+* Temperature & Humidity
+* Gas, PIR and Light Status
+* Relay Status & System Uptime
+
+### Web Dashboard
+
+The ESP32 hosts a web dashboard displaying:
+
+* Temperature
+* Humidity
+* Gas Level
+* Motion Status
+* Light Level
+* Relay Status
+* Manual Control Buttons
+* System Uptime
+
+### MQTT Communication
+
+Sensor readings are published every 30 seconds in JSON format.
+
+Example Topic:
+
+```text id="mg8rpb"
+iitjammu/sangilimurugan/home
+```
+
+Example JSON:
+
+```text id="iwdww2"
+{
+  "temp": 29,
+  "humidity": 64,
+  "gas": 18,
+  "pir": 1,
+  "light": 45,
+  "fan": "OFF",
+  "light_relay": "ON",
+  "alert": "SAFE"
+}
+```
+
+---
 
 ## Expected Output
 
-- OLED cycles through sensor information every 5 seconds.
-- Web dashboard displays all sensor readings and relay status.
-- Fan turns ON automatically when temperature exceeds the threshold.
-- Light turns ON automatically when motion is detected in low light.
-- Gas detection activates buzzer, LED, and emergency shutdown.
-- MQTT publishes JSON sensor data every 30 seconds.
+### OLED
 
-## Folder Contents
+```text id="1mv22l"
+Temp : 29°C
+Humidity : 64%
+```
 
-- home_hub.ino
-- README.md
-- circuit_diagram.jpg
-- web_dashboard.png
-- oled_display.png
-- serial_monitor.png
-- mqtt_output.png
-- working_model.jpg
-- demo_video_link.txt
+```text id="vw6x5d"
+Gas : SAFE
+Motion : YES
+Light : 42%
+```
+
+```text id="w8duz4"
+Fan : OFF
+Light : ON
+Uptime : 00:15:42
+```
+
+### Serial Monitor
+
+```text id="sk1q6v"
+Temperature : 29°C
+Humidity : 64%
+Gas Level : SAFE
+Motion : Detected
+Light Level : 42%
+Fan : OFF
+Light : ON
+MQTT Published Successfully
+```
+
+---
+
+## How to Run
+
+1. Assemble the circuit according to the wiring table.
+2. Install all required Arduino libraries.
+3. Update the Wi-Fi SSID and password in the source code.
+4. Upload the program to the ESP32.
+5. Open the Serial Monitor (115200 baud).
+6. Connect the ESP32 to Wi-Fi.
+7. Access the web dashboard using the ESP32 IP address.
+8. Monitor MQTT messages using MQTT Explorer.
+
+---
+
+## Project Folder Structure
+
+```text id="z1jzyv"
+p10-home-hub/
+│── iot_home_automation_hub.ino
+│── README.md
+│── web_dashboard.png
+│── mqtt_output.png
+│── serial_output.png
+│── circuit_diagram.png
+```
+
+---
+
+## Deliverables
+
+* ESP32 source code (`iot_home_automation_hub.ino`)
+* README.md
+* Web dashboard screenshot
+* MQTT Explorer screenshot
+* Serial Monitor screenshot
+* Circuit diagram
+* Demo video (Google Drive link)
+
+---
+
+## Demo Video
+
+Google Drive Link:
+
+https://drive.google.com/file/d/1xN92O8q0gnLaAvXiEuIQ_58yVyPO12kw/view?usp=drive_link
+
+---
+
+## GitHub Repository
+
+https://github.com/SangiliKutty/home-assignments/edit/main/p10-home-hub/README.md
+
+---
 
 ## Author
 
-Sangili Murugan
+**Sangili Murugan**
+
+BE Electronics and Communication Engineering
+
+Arjun College of Technology
+
+**IIT Jammu Summer School 2026 – IoT & Drones Program**
