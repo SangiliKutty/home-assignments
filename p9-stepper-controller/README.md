@@ -139,9 +139,9 @@ p9-stepper-controller/
 
 ## Demo Video
 
-Google Drive Link:
+Wokwi Demo Link:
 
-*Paste your Google Drive demo video link here.*
+https://wokwi.com/projects/470222613636943873
 
 ---
 
